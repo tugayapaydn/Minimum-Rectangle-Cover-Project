@@ -20,15 +20,6 @@ class FlowNetwork:
         self.__graph_cap = {}
         self.__reversed_graph = {}
 
-        #Print vertices
-        #self.print_vertices()
-        #print(len(self.__graph))
-
-        #Add edges from source → horizontal chords
-        #Edges are represented as tuples (p1, p2)
-        #for i in self.__horiz_chords:
-
-        #Instead
         self.__graph[self.__vertices[0]] = [x for x in self.__horiz_chords]
         self.__graph_cap[self.__vertices[0]] = [self.__UNIT_EDGE_CAPACITY for i in range(horiz_len)]
         self.__graph[self.__vertices[self.__num-1]] = []
@@ -45,30 +36,6 @@ class FlowNetwork:
             self.__graph_cap[v] = [self.__UNIT_EDGE_CAPACITY]
             self.__reversed_graph[v] = [h for h in self.__horiz_chords if ch.intersect(h[0], h[1], v[0], v[1])]
 
-        print("GRAPH")
-        for key, value in self.__graph.items():
-            print(str(key[0].getCoord())+","+str(key[1].getCoord()), ' : ', [(str(v[0].getCoord())+","+str(v[1].getCoord())+" | ") for v in value])
-        print()
-
-        print("REVERSED GRAPH")
-        for key, value in self.__reversed_graph.items():
-            print(str(key[0].getCoord())+","+str(key[1].getCoord()), ' : ', [(str(v[0].getCoord())+","+str(v[1].getCoord())+" | ") for v in value])
-        print()
-
-        print("GRAPH_CAP")
-        for key, value in self.__graph_cap.items():
-            print(str(key[0].getCoord())+","+str(key[1].getCoord()), ' : ', value)
-
-    def print_vertices(self):
-        #Test for chord sets
-        print("Vertex List:")
-        for v in self.__vertices:
-            if not all(v):
-                print(v)
-            else:
-                print("("+str(v[0])+","+str(v[1])+")")
-        print()
-
     def intersects(self, c1, c2):
         if not (c1[0] == c2[0] and c1[1] == c2[1]): 
             if  (c1[0] == c2[0]) or (c1[0] == c2[1]) or (c1[1] == c2[0]) or (c1[1] == c2[1]):
@@ -84,8 +51,6 @@ class FlowNetwork:
         return -1
 
     def BFS_HASH(self, s, t, parent):
-        #print("s: ",s[0].getCoord()," ",s[1].getCoord())
-        #print("t: ",t[0].getCoord()," ",t[1].getCoord())
         visited = {}
         queue = []
         queue.append(s)
@@ -93,10 +58,8 @@ class FlowNetwork:
         while queue:
             u = queue.pop(0)
 
-        #    print(len(self.__graph[u]))
             for i in range(len(self.__graph[u])):
                 neighbour = self.__graph[u][i]
-        #        print(neighbour[0].getCoord()," ",neighbour[1].getCoord())
                 if (((neighbour in visited) and (visited[neighbour] == False)) or (neighbour not in visited)) and self.__graph_cap[u][i] > 0:
                     queue.append(neighbour)
                     parent[neighbour] = u
@@ -112,10 +75,8 @@ class FlowNetwork:
 
         k = 0
         while self.BFS_HASH(source, sink, parent):
-            print("WSA")
             v_list.append([])
 
-            #print(parent)
             path = float("Inf")
             
             s = sink
@@ -132,22 +93,6 @@ class FlowNetwork:
                 v = parent[v]
             k = k+1
 
-        """
-        for key, value in parent.items():
-            print(str(key[0].getCoord())+","+str(key[1].getCoord()), ' : ', str(value[0].getCoord())+","+str(value[1].getCoord()))
-
-        """
-        #return v_list
-        """
-        print()
-        print("String v_list:")
-        for v in v_list:
-            for k in v:
-                print(str(k[0][0].getCoord())+","+str(k[0][1].getCoord())+" → "+str(k[1][0].getCoord())+","+str(k[1][1].getCoord()))
-            print()
-        
-        """
-        #print()
         max_match = []
         for m in v_list:
             max_match.append((m[1][0], m[1][1]))
@@ -162,8 +107,6 @@ class FlowNetwork:
             i = 0
             j = len(g)
             while i < j:
-                #print(g[i][0].getCoord(),",",g[i][1].getCoord())
-                #print(e[1][0].getCoord(),",",e[1][1].getCoord())
                 if g[i] == e[1]:
                     g.pop(i)
                     j -= 1
@@ -174,7 +117,6 @@ class FlowNetwork:
             i = 0
             j = len(g)
             while i < j:
-                #print(g[i]," ",e[0])
                 if g[i] == e[0]:
                     g.pop(i)
                     j -= 1
@@ -183,12 +125,6 @@ class FlowNetwork:
     def maxInd(self):
         m = self.max_flow()
         
-        print("Max Flow:")
-        for t in m:
-            print("("+"("+str(t[0][0].getCoord())+","+str(t[0][1].getCoord())+")"+","+"("+str(t[1][0].getCoord())+","+str(t[1][1].getCoord())+")")
-        
-
-        print()
         s = []
         f = []
         
@@ -209,10 +145,7 @@ class FlowNetwork:
                         flag = True
             if flag == False:
                 f.append(c)
-        """
-        for x in f:
-            print(x[0].getCoord(), x[1].getCoord())
-            """
+
         while f or m:
             if f:
                 u = f.pop(0)
@@ -222,11 +155,6 @@ class FlowNetwork:
                 self.remove_edge(e)
                 u = e[0]
                 s.append(u)
-            """
-            print()
-            for x in s:
-                print(x[0].getCoord()," , ",x[1].getCoord())
-            """
 
             if u in self.__graph:
                 size = len(self.__graph[u])

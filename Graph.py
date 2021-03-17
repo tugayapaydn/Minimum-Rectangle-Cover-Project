@@ -6,12 +6,6 @@ from FlowNetwork import FlowNetwork
 from Chord import *
 import copy
 
-#import sys
-#import bisect
-#from sympy import *
-#import matplotlib.pyplot as plt
-
-
 class RectilinearPolygon:
     def __init__(self, file):
         self._vertices = [] 
@@ -34,23 +28,8 @@ class RectilinearPolygon:
             self._graph[self._vertices[i]] = [self._vertices[i-1], self._vertices[i+1]]
         self._graph[self._vertices[self._V-1]] = [self._vertices[self._V-2], self._vertices[0]]
 
-        for key,value in self._graph.items():
-            print(key.getCoord()," : ", [x.getCoord() for x in value])
-
         #Find cohorizontal and covertical chords
         self._chordset()
-        
-        print()
-        print("vert chords: ")
-        for chord in self._vert_chords:
-            print("("+str(chord[0])+","+str(chord[1])+")")
-        print()
-
-        print()
-        print("horiz chords: ")
-        for chord in self._horiz_chords:
-            print("("+str(chord[0])+","+str(chord[1])+")")
-        print()
         
 
     def is_concave(self, vertex: sPoint):
@@ -73,10 +52,8 @@ class RectilinearPolygon:
 
     #Creates horizontal and vertical chordset lists stored as tuples (vertex1, vertex2)
     def _chordset(self):
-        print()
         covert_set = sorted(self._vertices, key=lambda k: [k.getCoord()[0], k.getCoord()[1]])
-        for x in covert_set:
-            print(x.getCoord())
+
         i = 0
         while i < len(covert_set)-1:
             v1 = covert_set[i]
@@ -84,7 +61,6 @@ class RectilinearPolygon:
 
             if v1.getCoord()[0] == v2.getCoord()[0]:
                 if not self.is_edge(v1, v2):
-                    print(self.is_concave(v1), self.is_concave(v2))
                     if self.is_concave(v1) and self.is_concave(v2):
                         self._vert_chords.append((v1,v2))
             i += 1
@@ -112,9 +88,7 @@ class RectilinearPolygon:
     
     def find_edge(self, p):
         cohoriz_set = sorted(self._vertices, key=lambda k: [k.getCoord()[1], k.getCoord()[0]])
-        for x in cohoriz_set:
-            print(x.getCoord())
-        print()
+
         ind = cohoriz_set.index(p)
         p = p.getCoord()
         
@@ -123,7 +97,7 @@ class RectilinearPolygon:
             e = e.getCoord()
             if e[0] == p[0]:
                 up = p[1] - e[1]
-        print("up: ", up)
+
         if up < 0:
             for i in range(ind-1, 0, -1):
                 c = cohoriz_set[i].getCoord()
@@ -145,12 +119,8 @@ class RectilinearPolygon:
 
     #cv = vertex that a vertical line will be drawn from
     def _draw_horiz(self, cv):
-        print()
-        #print(bisect.bisect_right(y, p[1]))
         for x in cv:
             end = self.find_edge(x)
-            print(end.getCoord())
-            print()
             if end != None:
                 self._graph[x].append(end)
                 self._vertices.append(end)
@@ -161,37 +131,17 @@ class RectilinearPolygon:
         polygon_covering = [copy.deepcopy(self._graph)]
 
         max_ind_set = network.maxInd()
-        for x in max_ind_set:
-            print(x[0].getCoord(),",",x[1].getCoord())            
+        for x in max_ind_set:         
             self._graph[x[0]].append(x[1])
             self._graph[x[1]].append(x[0])
 
-        for key,value in self._graph.items():
-            print(key.getCoord()," : ", [x.getCoord() for x in value])
         
         concave_set = []
         for v in self._vertices:
             if len(self._graph[v]) == 2 and self.is_concave(v):
                 concave_set.append(v)
-        print()
-        for x in concave_set:
-            print(x.getCoord())
         
         self._draw_horiz(concave_set)
         polygon_covering.append(copy.deepcopy(self._graph))
-        #sys.exit()
-        #self.draw_polygon()
         return polygon_covering
-    
-    """
-    def draw_polygon(self):
-        for key, value in self._graph.items():
-            for v in value:
-                x = [key.getCoord()[0], v.getCoord()[0]]
-                y = [key.getCoord()[1], v.getCoord()[1]]
-                plt.plot(x, y, label = "line", color = "black")
-    """
 # %%
-
-p = RectilinearPolygon("vertex_set.txt")
-p.minimum_cover()

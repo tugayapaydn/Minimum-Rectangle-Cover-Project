@@ -36,8 +36,6 @@ class Chord:
             return 0
 
     def intersect(self, p1, q1, p2, q2):
-        #p1, q1 = c1._points()[0], c1._points()[1]
-        #p2, q2 = c2._points()[0], c2._points()[1]
 
         o1 = self._orientation(p1, q1, p2) 
         o2 = self._orientation(p1, q1, q2) 

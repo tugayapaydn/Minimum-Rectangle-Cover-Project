@@ -8,14 +8,13 @@ class GUI:
         self._root = Tk()
         self._root.title("Rectilinear Polygon Covering")
         self._root.geometry("1366x768")
-        #self._root.grid_columnconfigure((0,1,0), weight=1)
 
         frame1 = Frame(self._root)
         frame1.pack(side=TOP)
         frame2 = Frame(self._root)
         frame2.pack(side=TOP)
 
-        self._label_file_name = Label(frame1, text="Filename")#.grid(row=1, column=0)
+        self._label_file_name = Label(frame1, text="Filename")
         self._file_entry = Entry(frame1, textvariable=StringVar())
         self._label_error = Label(frame2, text="")
         self._calc_button = Button(master=frame1, command=self.calc, height=2, width=8, text="Calculate")
